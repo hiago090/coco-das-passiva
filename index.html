@@ -32,24 +32,31 @@
       cursor: pointer;
     }
 
+    .reset {
+      background: red;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      max-width: 600px;
+      margin: 20px auto;
+    }
+
     .card {
       background: #222;
-      padding: 15px;
-      margin: 10px auto;
-      border-radius: 10px;
-      max-width: 400px;
+      padding: 20px;
+      border-radius: 12px;
+      font-size: 18px;
     }
 
     .history {
-      margin-top: 30px;
+      margin-top: 40px;
       text-align: left;
       max-width: 600px;
       margin-left: auto;
       margin-right: auto;
-    }
-
-    .reset {
-      background: red;
     }
   </style>
 </head>
@@ -58,18 +65,25 @@
 <h1>💩 Cocô das Passiva 💩</h1>
 
 <select id="nome">
+  <option value="Hiago">Hiago</option>
   <option value="Eduarda">Eduarda</option>
-  <option value="Iris">Iris</option>
   <option value="Luana">Luana</option>
+  <option value="Iris">Iris</option>
 </select>
 
 <br>
 
-<button onclick="registrar()">Registrar Cocô</button>
-<button class="reset" onclick="reiniciarMes()">Reiniciar Mês</button>
+<button onclick="registrar()">Registrar</button>
+<button class="reset" onclick="reiniciarMes()">Fechar Mês</button>
 
 <h2>Contagem do Mês</h2>
-<div id="contagem"></div>
+
+<div class="grid">
+  <div class="card" id="Hiago"></div>
+  <div class="card" id="Eduarda"></div>
+  <div class="card" id="Luana"></div>
+  <div class="card" id="Iris"></div>
+</div>
 
 <div class="history">
   <h2>Histórico</h2>
@@ -102,33 +116,44 @@
 
   function atualizarTela() {
     let contagem = {
+      Hiago: 0,
       Eduarda: 0,
-      Iris: 0,
-      Luana: 0
+      Luana: 0,
+      Iris: 0
     };
 
     registros.forEach(r => {
       contagem[r.nome]++;
     });
 
-    document.getElementById("contagem").innerHTML = `
-      <div class="card">Eduarda: ${contagem.Eduarda}</div>
-      <div class="card">Iris: ${contagem.Iris}</div>
-      <div class="card">Luana: ${contagem.Luana}</div>
-    `;
+    document.getElementById("Hiago").innerHTML =
+      `<strong>Hiago</strong><br>${contagem.Hiago}`;
+
+    document.getElementById("Eduarda").innerHTML =
+      `<strong>Eduarda</strong><br>${contagem.Eduarda}`;
+
+    document.getElementById("Luana").innerHTML =
+      `<strong>Luana</strong><br>${contagem.Luana}`;
+
+    document.getElementById("Iris").innerHTML =
+      `<strong>Iris</strong><br>${contagem.Iris}`;
 
     let lista = "";
+
     registros.forEach(r => {
-      lista += `<div class="card">
-        ${r.nome} - ${r.data} às ${r.hora}
-      </div>`;
+      lista += `
+        <div class="card">
+          ${r.nome} - ${r.data} às ${r.hora}
+        </div>
+      `;
     });
 
-    historicoMensal.forEach((mes, index) => {
-      lista += `<div class="card">
-        <strong>Mês ${index + 1} Finalizado:</strong><br>
-        ${mes}
-      </div>`;
+    historicoMensal.forEach(mes => {
+      lista += `
+        <div class="card">
+          ${mes}
+        </div>
+      `;
     });
 
     document.getElementById("historico").innerHTML = lista;
@@ -137,28 +162,40 @@
   function reiniciarMes() {
     if (registros.length === 0) return;
 
-    let resumo = "";
+    const agora = new Date();
+
+    const meses = [
+      "Janeiro", "Fevereiro", "Março", "Abril",
+      "Maio", "Junho", "Julho", "Agosto",
+      "Setembro", "Outubro", "Novembro", "Dezembro"
+    ];
+
+    const nomeMes = meses[agora.getMonth()];
+    const ano = agora.getFullYear();
+
     let contagem = {
+      Hiago: 0,
       Eduarda: 0,
-      Iris: 0,
-      Luana: 0
+      Luana: 0,
+      Iris: 0
     };
 
     registros.forEach(r => {
       contagem[r.nome]++;
     });
 
-    resumo = `
+    let resumo = `
+      <strong>${nomeMes} ${ano}</strong><br>
+      Hiago: ${contagem.Hiago}<br>
       Eduarda: ${contagem.Eduarda}<br>
-      Iris: ${contagem.Iris}<br>
-      Luana: ${contagem.Luana}
+      Luana: ${contagem.Luana}<br>
+      Iris: ${contagem.Iris}
     `;
 
     historicoMensal.push(resumo);
     registros = [];
     salvar();
     atualizarTela();
-
   }
 
   atualizarTela();
