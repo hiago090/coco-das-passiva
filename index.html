@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cocô das Passiva 💩</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: hotpink;
+    }
+
+    select, button {
+      padding: 10px;
+      margin: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+
+    button {
+      background: hotpink;
+      color: white;
+      cursor: pointer;
+    }
+
+    .card {
+      background: #222;
+      padding: 15px;
+      margin: 10px auto;
+      border-radius: 10px;
+      max-width: 400px;
+    }
+
+    .history {
+      margin-top: 30px;
+      text-align: left;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .reset {
+      background: red;
+    }
+  </style>
+</head>
+<body>
+
+<h1>💩 Cocô das Passiva 💩</h1>
+
+<select id="nome">
+  <option value="Eduarda">Eduarda</option>
+  <option value="Iris">Iris</option>
+  <option value="Luana">Luana</option>
+</select>
+
+<br>
+
+<button onclick="registrar()">Registrar Cocô</button>
+<button class="reset" onclick="reiniciarMes()">Reiniciar Mês</button>
+
+<h2>Contagem do Mês</h2>
+<div id="contagem"></div>
+
+<div class="history">
+  <h2>Histórico</h2>
+  <div id="historico"></div>
+</div>
+
+<script>
+  let registros = JSON.parse(localStorage.getItem("registros")) || [];
+  let historicoMensal = JSON.parse(localStorage.getItem("historicoMensal")) || [];
+
+  function salvar() {
+    localStorage.setItem("registros", JSON.stringify(registros));
+    localStorage.setItem("historicoMensal", JSON.stringify(historicoMensal));
+  }
+
+  function registrar() {
+    const nome = document.getElementById("nome").value;
+    const agora = new Date();
+
+    const registro = {
+      nome: nome,
+      data: agora.toLocaleDateString(),
+      hora: agora.toLocaleTimeString()
+    };
+
+    registros.push(registro);
+    salvar();
+    atualizarTela();
+  }
+
+  function atualizarTela() {
+    let contagem = {
+      Eduarda: 0,
+      Iris: 0,
+      Luana: 0
+    };
+
+    registros.forEach(r => {
+      contagem[r.nome]++;
+    });
+
+    document.getElementById("contagem").innerHTML = `
+      <div class="card">Eduarda: ${contagem.Eduarda}</div>
+      <div class="card">Iris: ${contagem.Iris}</div>
+      <div class="card">Luana: ${contagem.Luana}</div>
+    `;
+
+    let lista = "";
+    registros.forEach(r => {
+      lista += `<div class="card">
+        ${r.nome} - ${r.data} às ${r.hora}
+      </div>`;
+    });
+
+    historicoMensal.forEach((mes, index) => {
+      lista += `<div class="card">
+        <strong>Mês ${index + 1} Finalizado:</strong><br>
+        ${mes}
+      </div>`;
+    });
+
+    document.getElementById("historico").innerHTML = lista;
+  }
+
+  function reiniciarMes() {
+    if (registros.length === 0) return;
+
+    let resumo = "";
+    let contagem = {
+      Eduarda: 0,
+      Iris: 0,
+      Luana: 0
+    };
+
+    registros.forEach(r => {
+      contagem[r.nome]++;
+    });
+
+    resumo = `
+      Eduarda: ${contagem.Eduarda}<br>
+      Iris: ${contagem.Iris}<br>
+      Luana: ${contagem.Luana}
+    `;
+
+    historicoMensal.push(resumo);
+    registros = [];
+    salvar();
+    atualizarTela();
+  }
+
+  atualizarTela();
+</script>
+
+</body>
+</html>
